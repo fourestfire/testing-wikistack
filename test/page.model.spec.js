@@ -21,22 +21,37 @@ describe('Page model', function () {
     });
 
     describe('route', function () {
-      it('returns the url_name prepended by "/wiki/"', function(){
+      xit('returns the url_name prepended by "/wiki/"', function(){
         page.urlTitle = "test_Title"
         expect(page.route).to.eql("/wiki/test_Title");
       });
     });
     describe('renderedContent', function () {
-      it('converts the markdown-formatted content into HTML', function(){
-        
+      xit('converts the markdown-formatted content into HTML', function(){
+
       });
     });
   });
 
   describe('Class methods', function () {
     describe('findByTag', function () {
-      it('gets pages with the search tag');
-      it('does not get pages without the search tag');
+      xit('gets pages with the search tag', function (done) {
+          Page.findByTag('bar')
+          .then(function (pages) {
+            expect(pages).to.have.lengthOf(1);
+            done();
+          })
+          .catch(done);
+        });
+
+      xit('does not get pages without the search tag', function (done) {
+        Page.findByTag('falafel')
+        .then(function (pages) {
+          expect(pages).to.have.lengthOf(0);
+          done();
+        })
+        .catch(done);
+      });
     });
   });
 
@@ -49,13 +64,54 @@ describe('Page model', function () {
   });
 
   describe('Validations', function () {
-    it('errors without title');
-    it('errors without content');
-    it('errors given an invalid status');
-  });
+    var page;
+    beforeEach(function () {
+      page = Page.build();
+    });
 
+    it('errors without title', function (done) {
+      page.validate()
+      .then(function (err) {
+        expect(err).to.exist;
+        expect(err.errors).to.exist;
+        expect(err.errors[0].path).to.equal('title');
+        done();
+      });
+    });
+    it('errors without content', function(done) {
+      page.validate()
+      .then(function (err) {
+        expect(err).to.exist;
+        expect(err.errors).to.exist;
+        expect(err.errors[2].path).to.equal('content');
+        done();
+      });
+    });
+    xit('errors given an invalid status', function(done) {
+      page.validate()
+      .then(function (err) {
+        expect(err).to.exist;
+        expect(err.errors).to.exist;
+        expect(err.errors[3].path).to.equal('status');
+        done();
+      });
+  });
+})
   describe('Hooks', function () {
-    it('it sets urlTitle based on title before validating');
+    var page;
+    beforeEach(function (done) {
+      page = Page.create({
+        title: "test Title",
+        content: "someContent",
+        tags: ['foo', 'bar']
+      }).then(function(){
+        done();
+      }).catch(done);
+    });
+
+    xit('it sets urlTitle based on title before validating', function(){
+      expect(page.urlTitle).to.eql("test_Title");
+    });
   });
 
 });
